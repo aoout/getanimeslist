@@ -1,3 +1,9 @@
 MyWindow{
-    background-color:rgb(244, 249, 250)
+    background-color:rgb(244, 249, 250);
+}
+#button_get{
+    background-color:rgb(221, 238, 231);
+}
+#button_contrast{
+    background-color:rgb(221, 238, 231);
 }

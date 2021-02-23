@@ -35,6 +35,8 @@ class MyWindow(QMainWindow):
         self.contrast_thread.contrast_signal.connect(self.contrasted)
         self.contrast_thread.Invisible_contrast_signal.connect(self.uncontrasted)
         self.setStyleSheet(Style)
+        self.lineedit_get.returnPressed.connect(self.getAni)
+        self.lineedit_contrast_2.returnPressed.connect(self.contrastAni)
         self.status = 'get'
 
     def get(self):
@@ -112,7 +114,7 @@ class getAni_thread(QThread):
         if animes==False:
             self.Invisible_get_signal.emit()
         else:
-            self.get_signal.emit()
+            self.get_signal.emit(animes)
 
 
 class contrastAni_thread(QThread):
