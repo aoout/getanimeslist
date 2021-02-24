@@ -1,11 +1,9 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit,QMessageBox,QTableWidgetItem
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5 import QtCore, uic
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QPixmap, QIcon
 from threading import Thread, Lock
-import requests
-import json
-import time
+from PyQt5 import QtCore, uic
+import requests,json,time,sys
 
 
 with open('Style.css', encoding='utf-8') as f:
@@ -19,63 +17,57 @@ class MyWindow(QMainWindow):
         uic.loadUi("get.ui", self)
         self.setWindowTitle('获取/对比追番列表')
         self.setWindowIcon(QIcon("icon.png"))
+
         self.label.setPixmap(QPixmap('2233.png'))
         self.label.setScaledContents(True)
-        self.tablewidgets  = [self.tableWidget, self.tableWidget_2,
-                            self.tableWidget_3, self.tableWidget_4]
+        self.tablewidgets  = [self.tableWidget, self.tableWidget_2,self.tableWidget_3, self.tableWidget_4]
+        self.setStyleSheet(Style)
         self.show()
-        
        
         self.resizeEvent('初始化')
         self.button_get.clicked.connect(self.getAni)
         self.button_contrast.clicked.connect(self.contrastAni)
-        self.action.triggered.connect(self.get)
-        self.action_2.triggered.connect(self.contrast)
+        self.lineedit_get.returnPressed.connect(self.getAni)
+        self.lineedit_contrast_2.returnPressed.connect(self.contrastAni)
+        
         self.get_thread = getAni_thread()
         self.get_thread.get_signal.connect(self.geted)
         self.get_thread.Invisible_get_signal.connect(self.ungeted)
         self.contrast_thread = contrastAni_thread()
         self.contrast_thread.contrast_signal.connect(self.contrasted)
         self.contrast_thread.Invisible_contrast_signal.connect(self.uncontrasted)
-        self.setStyleSheet(Style)
-        self.lineedit_get.returnPressed.connect(self.getAni)
-        self.lineedit_contrast_2.returnPressed.connect(self.contrastAni)
-        self.status = 'get'
+
+        self.speed='acceletate'
+        self.action.triggered.connect(self.get)
+        self.action_2.triggered.connect(self.contrast)
         self.action_5.triggered.connect(self.accelerate)
         self.action_8.triggered.connect(self.slowdown)
         self.action_9.triggered.connect(self.why)
-        self.speed='acceletate'
 
     def get(self):
-        if self.status == 'get':
-            pass
-        else:
-            self.status = 'get'
+
+        if self.stack.currentIndex()!=0:
             self.cleartable()
             self.statusbar.clearMessage()
             self.stack.setCurrentIndex(0)
-
+            
     def contrast(self):
-        if self.status == 'contrast':
-            pass
-        else:
-            self.status = 'contrast'
+
+        if self.stack.currentIndex()!=1:
             self.cleartable()
             self.statusbar.clearMessage()
             self.stack.setCurrentIndex(1)
 
     def accelerate(self):
-        if self.speed=='acceletate':
-            pass
-        else:
+        if self.speed!='acceletate':
             self.speed=='acceletate'
             self.statusbar.showMessage('已成功切换为加速模式', 5000)
+
     def slowdown(self):
-        if self.speed=='slowdown':
-            pass
-        else:
+        if self.speed!='slowdown':
             self.speed='slowdown'
             self.statusbar.showMessage('已成功切换为减速模式', 5000)
+
     def why(self):
         QMessageBox.information(self,'解释','如果使用减速模式，能够保证追番列表中“全部”这一栏的顺序与b站页面完全一致。反之则不能。')
 
@@ -100,8 +92,6 @@ class MyWindow(QMainWindow):
                 item=QTableWidgetItem(Ani[1])
                 self.tablewidgets[i].setItem(curRow,1,item)
 
-                
-        
         animes_num = len(animes[0])
         self.endtime = time.time()
         dtime=self.endtime-self.starttime
@@ -110,9 +100,11 @@ class MyWindow(QMainWindow):
     def ungeted(self):
         QMessageBox.critical(self,'错误','该用户隐私设置未公开！')
         self.statusbar.clearMessage()
+
     def uncontrasted(self,num):
         QMessageBox.critical(self,'错误',f'第{num}用户隐私设置未公开！')
         self.statusbar.clearMessage()
+
     def contrastAni(self):
         self.starttime=time.time()
         self.cleartable()
@@ -127,6 +119,7 @@ class MyWindow(QMainWindow):
         for i in range(4):
             for Ani in set(animes_1[i]).intersection(set(animes_2[i])):
                 curRow=0
+                #TODO:这里的操作应该可以封装到函数里
                 self.tablewidgets[i].insertRow(curRow)
                 item=QTableWidgetItem(Ani[0])
                 self.tablewidgets[i].setItem(curRow,0,item)
@@ -143,11 +136,13 @@ class MyWindow(QMainWindow):
     def resizeEvent(self, event):
         self.label.resize(self.widget.size())
         width=self.tablewidgets[self.tabWidget.currentIndex()].width()
+        # TODO:这里能不能再修改一下，总感觉不对劲
         for table in self.tablewidgets:
             table.setColumnWidth(0,int(width*0.65)-1); 
             table.setColumnWidth(1,int(width*0.35)); 
 
     def cleartable(self):
+        # BUG:这个函数好像根本就没有起到效果
         for table in self.tablewidgets:
             curRow=table.currentRow()
             for i in range(curRow+1):
@@ -247,4 +242,4 @@ def getANIMES(uid,speed):
 if __name__ == '__main__':
     app = QApplication([])
     mywindow = MyWindow()
-    app.exec_()
+    sys.exit(app.exec_())
