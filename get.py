@@ -24,7 +24,6 @@ class MyWindow(QMainWindow):
         self.setStyleSheet(Style)
         self.show()
        
-        self.resizeEvent('初始化')
         self.button_get.clicked.connect(self.getAni)
         self.button_contrast.clicked.connect(self.contrastAni)
         self.lineedit_get.returnPressed.connect(self.getAni)
@@ -84,13 +83,13 @@ class MyWindow(QMainWindow):
     def geted(self, animes):
         
         for i in range(4):
-            for Ani in animes[i]:
-                curRow=0
-                self.tablewidgets[i].insertRow(curRow)
+            for Ani in animes[i][::-1]:
+
+                self.tablewidgets[i].insertRow(0)
                 item=QTableWidgetItem(Ani[0])
-                self.tablewidgets[i].setItem(curRow,0,item)
+                self.tablewidgets[i].setItem(0,0,item)
                 item=QTableWidgetItem(Ani[1])
-                self.tablewidgets[i].setItem(curRow,1,item)
+                self.tablewidgets[i].setItem(0,1,item)
 
         animes_num = len(animes[0])
         self.endtime = time.time()
@@ -117,14 +116,13 @@ class MyWindow(QMainWindow):
 
     def contrasted(self, animes_1, animes_2):
         for i in range(4):
-            for Ani in set(animes_1[i]).intersection(set(animes_2[i])):
-                curRow=0
-                #TODO:这里的操作应该可以封装到函数里
-                self.tablewidgets[i].insertRow(curRow)
+            for Ani in set(animes_1[i]).intersection(set(animes_2[i]))[::-1]:
+
+                self.tablewidgets[i].insertRow(0)
                 item=QTableWidgetItem(Ani[0])
-                self.tablewidgets[i].setItem(curRow,0,item)
+                self.tablewidgets[i].setItem(0,0,item)
                 item=QTableWidgetItem(Ani[1])
-                self.tablewidgets[i].setItem(curRow,1,item)
+                self.tablewidgets[i].setItem(0,1,item)
         animes_num_1 = len(animes_1[0])
         animes_num_2 = len(animes_2[0])
         animes_num_com = len(set(animes_1[0]).intersection(set(animes_2[0])))
@@ -132,21 +130,19 @@ class MyWindow(QMainWindow):
         dtime=self.endtime-self.starttime
         self.statusbar.showMessage(
             f'分别查询到{animes_num_1}和{animes_num_2}条追番记录！其中有{animes_num_com}条相同！本次对比一共花费了{dtime:.4}秒', 5000)
-
-    def resizeEvent(self, event):
-        self.label.resize(self.widget.size())
-        width=self.tablewidgets[self.tabWidget.currentIndex()].width()
-        # TODO:这里能不能再修改一下，总感觉不对劲
-        for table in self.tablewidgets:
-            table.setColumnWidth(0,int(width*0.65)-1); 
-            table.setColumnWidth(1,int(width*0.35)); 
+        
+    def paintEvent(self,event):
+       self.label.resize(self.widget.size())
+       width=self.tablewidgets[self.tabWidget.currentIndex()].width()
+       for table in self.tablewidgets:
+          table.setColumnWidth(0,int(width*0.65)-1); 
+          table.setColumnWidth(1,int(width*0.35)); 
 
     def cleartable(self):
-        # BUG:这个函数好像根本就没有起到效果
+
         for table in self.tablewidgets:
-            curRow=table.currentRow()
-            for i in range(curRow+1):
-                table.removeRow(curRow)
+            for i in range(table.rowCount()-1,-1,-1):
+                table.removeRow(i)
 
 
 class getAni_thread(QThread):
