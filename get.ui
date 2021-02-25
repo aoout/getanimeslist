@@ -377,28 +377,28 @@
     <property name="title">
      <string>功能</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
+    <addaction name="action_get"/>
+    <addaction name="action_contrast"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>模式</string>
     </property>
-    <addaction name="action_5"/>
+    <addaction name="action_acceletate"/>
     <addaction name="separator"/>
-    <addaction name="action_8"/>
-    <addaction name="action_9"/>
+    <addaction name="action_slowdown"/>
+    <addaction name="action_why"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="action_get">
    <property name="text">
     <string>获取追番列表</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_contrast">
    <property name="text">
     <string>比对追番列表</string>
    </property>
@@ -408,7 +408,7 @@
     <string>为什么要这么做</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_acceletate">
    <property name="text">
     <string>加速(默认)</string>
    </property>
@@ -418,12 +418,12 @@
     <string>1</string>
    </property>
   </action>
-  <action name="action_8">
+  <action name="action_slowdown">
    <property name="text">
     <string>减速</string>
    </property>
   </action>
-  <action name="action_9">
+  <action name="action_why">
    <property name="text">
     <string>我为什么要这么做？</string>
    </property>
